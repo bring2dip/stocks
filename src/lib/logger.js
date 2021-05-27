@@ -1,5 +1,5 @@
 export default {
-  log: (a) => console.log(a),
+  log: (...rest) => console.log(rest),
   error: (e) => console.error(e),
 };
 
