@@ -4,14 +4,22 @@ import sum from 'lodash/sum';
 import logger from 'lib/logger';
 import reports from 'lib/reports';
 
+import logo from 'images/cardboard.png';
+import heartSVG from 'images/heart.svg';
+
 import 'css/global.css';
-import 'css/analytics.module.css';
+import styles from 'css/analytics.module.css';
 
 function displayHello() {
     logger.log('This is an Admin app');
     logger.log('mean', mean([5, 5, 10, 15, 20]));
     logger.log('mean', sum([5, 5, 10, 15, 20]));
-    logger.log(reports.data());    
+    logger.log(reports.data());
+    document.body.innerHTML = `        
+        <h1 class=${styles.title}">Analytics</h1>
+        <h3 class=${styles.title}">This is analytics.</h3>
+        <div class=${styles.heart}>Made with ${heartSVG} by Deepak</div>
+    `;
 }
 
 displayHello();

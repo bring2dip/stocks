@@ -1,5 +1,4 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-
 const path = require('path');
 
 module.exports = {
@@ -80,8 +79,15 @@ module.exports = {
       ],
     },
     plugins: [
-      new HtmlWebpackPlugin({
-        template: path.resolve('src', 'index.html')
+      new HtmlWebpackPlugin({        
+        chunks: ['app'],
+        filename: 'index.html',
+        template: path.resolve('src/views/index.html'),       
       }),
+      new HtmlWebpackPlugin({        
+        chunks: ['analytics'],
+        filename: 'analytics.html',
+        template: path.resolve('src/views/analytics.html')      
+      })
     ]
 };

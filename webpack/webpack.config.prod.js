@@ -2,7 +2,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
-
 const path = require('path');
 
 module.exports = {
@@ -85,6 +84,16 @@ module.exports = {
       }),
       new CleanWebpackPlugin(), 
       new WebpackManifestPlugin({}),
+      new HtmlWebpackPlugin({        
+        chunks: ['app'],
+        filename: 'index.html',
+        template: path.resolve('src/views/index.html'),       
+      }),
+      new HtmlWebpackPlugin({        
+        chunks: ['analytics'],
+        filename: 'analytics.html',
+        template: path.resolve('src/views/analytics.html')      
+      })
     ],
     optimization: {
       runtimeChunk: 'single',
