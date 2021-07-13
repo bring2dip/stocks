@@ -1,5 +1,6 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
+const Dotenv = require('dotenv-webpack');
 
 module.exports = {
     mode: 'development',
@@ -88,6 +89,7 @@ module.exports = {
         chunks: ['analytics'],
         filename: 'analytics.html',
         template: path.resolve('src/views/analytics.html')      
-      })
+      }),
+      new Dotenv(),
     ]
 };

@@ -3,6 +3,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 const path = require('path');
+const Dotenv = require('dotenv-webpack');
 
 module.exports = {
     mode: 'production',
@@ -93,7 +94,8 @@ module.exports = {
         chunks: ['analytics'],
         filename: 'analytics.html',
         template: path.resolve('src/views/analytics.html')      
-      })
+      }),
+      new Dotenv(),
     ],
     optimization: {
       runtimeChunk: 'single',
@@ -108,9 +110,10 @@ module.exports = {
         minSize: 0,      
         cacheGroups: {  
           cssChunks: {            
-            name(module) {              
-              const packageName = module._identifier.match(/[\\/]css[\\/](.*?)([\\/]|$)/)[1];  
-              return packageName.replace('.module', '').replace('.css', '');
+            name(module) {    
+              const cssFile = module._identifier.match(/[\\/]\.css[\\/](.*?)([\\/]|$)/);          
+              const packageName = cssFile && cssFile[1];
+              return packageName?.replace('.module', '').replace('.css', '');
             },
             test: (module) =>
             module.constructor.name === "CssModule",
