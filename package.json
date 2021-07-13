@@ -7,7 +7,8 @@
   "scripts": {
     "build": "webpack --config webpack/webpack.config.prod.js",
     "dev": "webpack serve --progress --config webpack/webpack.config.dev.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "gh-pages -d dist"
   },
   "keywords": [],
   "author": "",

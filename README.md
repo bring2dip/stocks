@@ -1,5 +1,6 @@
 # Stocks using finnhub api
 
+Open [https://bring2dip.github.io/stocks/](https://bring2dip.github.io/stocks/)
 
 ## Development
 `npm run dev`
