@@ -11,7 +11,11 @@ import * as finnhub from 'finnhub';
 const API_KEY= process.env.FINHUB_KEY;
 
 const finhubAuthentication = finnhub.ApiClient.instance.authentications['api_key'];
-finhubAuthentication.apiKey = API_KEY
+
+function setApiKey(key) {
+    finhubAuthentication.apiKey = key;
+}
+
 
 const finnhubClient = new finnhub.DefaultApi();
 
@@ -43,6 +47,7 @@ const getUnixTime = (date) => {
 }
 
 const MAX_NUMS = 40;
+const initalData = [['-', '-', '-', '-', '-', '-', '-', '-']];
 
 async function displayTable(stockGrid, symbolInput) {
     const today = new Date();
@@ -52,50 +57,57 @@ async function displayTable(stockGrid, symbolInput) {
     const endDate = today;
     const loadingDiv = getById('stocks-loading-container');
     loadingDiv.innerHTML = 'Loading...';
-    const responseData = await getData(
-        symbolInput.toUpperCase(),
-        getUnixTime(startDate), getUnixTime(endDate),
-    );
-    responseData.hlDiff = [];
-    responseData.coDiff = [];
-    loadingDiv.innerHTML = '';
-
-    console.log(responseData);
-    let data = [];
-    const totalDays = responseData.c.length;
-    for(let i=0; i < totalDays; i++) {
-        const hlDiff = responseData.h[i] - responseData.l[i];
-        const coDiff = responseData.c[i] - responseData.o[i];
-        responseData.hlDiff.push(hlDiff);
-        responseData.coDiff.push(coDiff);
-        data.push([
-            formatDate(new Date(responseData.t[i] * 1000)),
-            round(responseData.o[i], 2),
-            round(responseData.h[i], 2),
-            round(responseData.l[i], 2),
-            round(responseData.c[i], 2),
-            round(responseData.v[i], 2),
-            round(hlDiff, 2),
-            round(coDiff,2), 
-        ]);
+    try {
+        const responseData = await getData(
+            symbolInput.toUpperCase(),
+            getUnixTime(startDate), getUnixTime(endDate),
+        );
+        responseData.hlDiff = [];
+        responseData.coDiff = [];
+        loadingDiv.innerHTML = '';
+    
+        let data = [];
+        const totalDays = responseData.c.length;
+        for(let i=0; i < totalDays; i++) {
+            const hlDiff = responseData.h[i] - responseData.l[i];
+            const coDiff = responseData.c[i] - responseData.o[i];
+            responseData.hlDiff.push(hlDiff);
+            responseData.coDiff.push(coDiff);
+            data.push([
+                formatDate(new Date(responseData.t[i] * 1000)),
+                round(responseData.o[i], 2),
+                round(responseData.h[i], 2),
+                round(responseData.l[i], 2),
+                round(responseData.c[i], 2),
+                round(responseData.v[i], 2),
+                round(hlDiff, 2),
+                round(coDiff,2), 
+            ]);
+        }
+        data.push(['-', '-', '-', '-', '-', '-', '-', '-']);
+        const stats = ['max', 'min', 'mean', 'median', 'std'];
+        stats.forEach(statItem => {
+            data.push([
+                bold(statItem),
+                round(statsFunctionsMap[statItem](responseData.o), 2),
+                round(statsFunctionsMap[statItem](responseData.h), 2),
+                round(statsFunctionsMap[statItem](responseData.l), 2),
+                round(statsFunctionsMap[statItem](responseData.c), 2),
+                round(statsFunctionsMap[statItem](responseData.v), 2),
+                round(statsFunctionsMap[statItem](responseData.hlDiff), 2),
+                round(statsFunctionsMap[statItem](responseData.coDiff), 2),
+            ]);
+        });    
+        stockGrid.updateConfig({        
+            data,        
+        }).forceRender();
+    } catch (e) {
+        stockGrid.updateConfig({        
+            data: initalData,        
+        }).forceRender();
+        loadingDiv.innerHTML = 'Loading failed';
     }
-    data.push(['-', '-', '-', '-', '-', '-', '-', '-']);
-    const stats = ['max', 'min', 'mean', 'median', 'std'];
-    stats.forEach(statItem => {
-        data.push([
-            bold(statItem),
-            round(statsFunctionsMap[statItem](responseData.o), 2),
-            round(statsFunctionsMap[statItem](responseData.h), 2),
-            round(statsFunctionsMap[statItem](responseData.l), 2),
-            round(statsFunctionsMap[statItem](responseData.c), 2),
-            round(statsFunctionsMap[statItem](responseData.v), 2),
-            round(statsFunctionsMap[statItem](responseData.hlDiff), 2),
-            round(statsFunctionsMap[statItem](responseData.coDiff), 2),
-        ]);
-    });    
-    stockGrid.updateConfig({        
-        data,        
-    }).forceRender();    
+        
 }
 
 const styles = {
@@ -129,26 +141,56 @@ window.addEventListener('load', () => {
     const fetchBtn = getById('stocks-fetch-btn');
     const symbolInput = getById('stocks-symbol');
     const dataContainer = getById('stocks-table-container');
+    const apiKeyInput = getById('stocks-api-key');
+    const messageContainer = getById('stocks-message-container');
 
     const stockGrid = new Grid({
         columns: ['Date', 'Open', 'High', 'Low', 'Close', 'Volume', 'HLDiff', 'CODiff'],
-        data: [['-', '-', '-', '-', '-', '-', '-', '-']],
+        data: initalData,
         className: styles,
     });
 
+
+    const getApiKeyValue = () => {
+        const apiKeyValue = apiKeyInput.value || API_KEY;
+        return apiKeyValue;
+    };
+
     stockGrid.render(dataContainer);
-    displayTable(stockGrid, symbolInput.value);
+    if (getApiKeyValue()) {
+        displayTable(stockGrid, symbolInput.value);
+    }    
 
     fetchBtn.addEventListener('click', () => {  
-        const { value } = symbolInput;                  
-        if (!value) return;
+        const { value } = symbolInput;
+        const apiKey = getApiKeyValue();
+        if (!apiKey) {
+            messageContainer.innerHTML='Finnhub API Key required';
+            return;
+        }
+        if (!value) {
+            messageContainer.innerHTML='Stock symbol is required';
+            return;
+        }   
+        messageContainer.innerHTML = '';     
+        setApiKey(apiKey);
         displayTable(stockGrid, value);
     });
 
     symbolInput.addEventListener('keydown', (e) => { 
-        const { value } = symbolInput;       
+        const { value } = symbolInput;
+        const apiKey = getApiKeyValue();
         if (e.key === 'Enter' || e.keyCode === 13) {
-            if (!value) return;
+            if (!apiKey) {
+                messageContainer.innerHTML='Finnhub API Key required';
+                return;
+            }
+            if (!value) {
+                messageContainer.innerHTML='Stock symbol is required';
+                return;
+            }
+            messageContainer.innerHTML = '';
+            setApiKey(apiKey);
             displayTable(stockGrid, value);
         }    
     });
