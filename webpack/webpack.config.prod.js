@@ -12,7 +12,7 @@ module.exports = {
       analytics: path.resolve('src', 'analytics.js')
     },
     output: {
-      publicPath: '/',
+      publicPath: '/stocks/',
       path: path.resolve('dist'),
       filename: '[name].[contenthash].js',
       chunkFilename: `[name].[contenthash].css`,
