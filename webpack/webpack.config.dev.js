@@ -6,8 +6,8 @@ module.exports = {
     mode: 'development',
     devtool: 'source-map',
     entry: { 
-      app: path.resolve('src', 'index.js'),
-      analytics: path.resolve('src', 'analytics.js')
+      index: path.resolve('src', 'features', 'index', 'index.js'),
+      analytics: path.resolve('src', 'features', 'analytics', 'analytics.js')
     },
     output: {
       publicPath: '/',
@@ -81,14 +81,14 @@ module.exports = {
     },
     plugins: [
       new HtmlWebpackPlugin({        
-        chunks: ['app'],
+        chunks: ['index'],
         filename: 'index.html',
-        template: path.resolve('src/views/index.html'),       
+        template: path.resolve('src/features/index/index.html'),
       }),
       new HtmlWebpackPlugin({        
         chunks: ['analytics'],
         filename: 'analytics.html',
-        template: path.resolve('src/views/analytics.html')      
+        template: path.resolve('src/features/analytics/analytics.html')
       }),
       new Dotenv(),
     ]

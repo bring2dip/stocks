@@ -5,7 +5,7 @@ import logger from 'lib/logger';
 import reports from 'lib/reports';
 
 import 'css/global.css';
-import styles from 'css/analytics.module.css';
+import styles from './analytics.module.css';
 
 function displayHello() {
     logger.log('This is an Admin app');

@@ -8,8 +8,8 @@ const Dotenv = require('dotenv-webpack');
 module.exports = {
     mode: 'production',
     entry: { 
-      app: path.resolve('src', 'index.js'),
-      analytics: path.resolve('src', 'analytics.js')
+      index: path.resolve('src', 'features', 'index', 'index.js'),
+      analytics: path.resolve('src', 'features', 'analytics', 'analytics.js')
     },
     output: {
       publicPath: '/stocks/',
@@ -86,14 +86,14 @@ module.exports = {
       new CleanWebpackPlugin(), 
       new WebpackManifestPlugin({}),
       new HtmlWebpackPlugin({        
-        chunks: ['app'],
+        chunks: ['index'],
         filename: 'index.html',
-        template: path.resolve('src/views/index.html'),       
+        template: path.resolve('src/features/index/index.html'),
       }),
       new HtmlWebpackPlugin({        
         chunks: ['analytics'],
         filename: 'analytics.html',
-        template: path.resolve('src/views/analytics.html')      
+        template: path.resolve('src/features/analytics/analytics.html'),
       }),
       new Dotenv(),
     ],

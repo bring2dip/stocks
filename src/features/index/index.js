@@ -140,7 +140,7 @@ const styles = {
 window.addEventListener('load', () => {
     const fetchBtn = getById('stocks-fetch-btn');
     const symbolInput = getById('stocks-symbol');
-    const dataContainer = getById('stocks-table-container');
+    const dataContainer = getById('stocks-data-container');
     const apiKeyInput = getById('stocks-api-key');
     const messageContainer = getById('stocks-message-container');
 
@@ -158,6 +158,7 @@ window.addEventListener('load', () => {
 
     stockGrid.render(dataContainer);
     if (getApiKeyValue()) {
+        setApiKey(getApiKeyValue());
         displayTable(stockGrid, symbolInput.value);
     }    
 
