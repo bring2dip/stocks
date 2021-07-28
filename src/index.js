@@ -7,6 +7,7 @@ import "gridjs/dist/theme/mermaid.css";
 import { css } from '@emotion/css';
 
 import * as finnhub from 'finnhub';
+import startOfYear from 'date-fns/startOfYear';
 
 const API_KEY= process.env.FINHUB_KEY;
 
@@ -46,14 +47,14 @@ const getUnixTime = (date) => {
     return Math.floor(date.getTime()/1000);
 }
 
-const MAX_NUMS = 40;
+const DEFAULT_MAX_NUMS = 30;
 const initalData = [['-', '-', '-', '-', '-', '-', '-', '-']];
 
-async function displayTable(stockGrid, symbolInput) {
-    const today = new Date();
-    const subtractMaxDays = subDays(MAX_NUMS);
+async function displayTable(stockGrid, symbolInput, timeInterval) {
+    const today = new Date();    
+    const subtractMaxDays = timeInterval !== 'YTD' ? subDays(timeInterval) : 0;
     const formatDate = format('dd MMM');
-    const startDate = subtractMaxDays(today);
+    const startDate = timeInterval === 'YTD' ? startOfYear(new Date()) : subtractMaxDays(today);
     const endDate = today;
     const loadingDiv = getById('stocks-loading-container');
     loadingDiv.innerHTML = 'Loading...';
@@ -140,6 +141,7 @@ const styles = {
 window.addEventListener('load', () => {
     const fetchBtn = getById('stocks-fetch-btn');
     const symbolInput = getById('stocks-symbol');
+    const timeInterval = getById('stocks-time-interval');
     const dataContainer = getById('stocks-table-container');
     const apiKeyInput = getById('stocks-api-key');
     const messageContainer = getById('stocks-message-container');
@@ -150,7 +152,6 @@ window.addEventListener('load', () => {
         className: styles,
     });
 
-
     const getApiKeyValue = () => {
         const apiKeyValue = apiKeyInput.value || API_KEY;
         return apiKeyValue;
@@ -158,40 +159,41 @@ window.addEventListener('load', () => {
 
     stockGrid.render(dataContainer);
     if (getApiKeyValue()) {
-        displayTable(stockGrid, symbolInput.value);
+        setApiKey(getApiKeyValue());
+        displayTable(stockGrid, symbolInput.value, timeInterval.value);
     }    
 
     fetchBtn.addEventListener('click', () => {  
-        const { value } = symbolInput;
+        const { value: symbolValue } = symbolInput;
         const apiKey = getApiKeyValue();
         if (!apiKey) {
             messageContainer.innerHTML='Finnhub API Key required';
             return;
         }
-        if (!value) {
+        if (!symbolValue) {
             messageContainer.innerHTML='Stock symbol is required';
             return;
         }   
         messageContainer.innerHTML = '';     
         setApiKey(apiKey);
-        displayTable(stockGrid, value);
+        displayTable(stockGrid, symbolValue, timeInterval.value);
     });
 
     symbolInput.addEventListener('keydown', (e) => { 
-        const { value } = symbolInput;
+        const { value: symbolValue } = symbolInput;
         const apiKey = getApiKeyValue();
         if (e.key === 'Enter' || e.keyCode === 13) {
             if (!apiKey) {
                 messageContainer.innerHTML='Finnhub API Key required';
                 return;
             }
-            if (!value) {
+            if (!symbolValue) {
                 messageContainer.innerHTML='Stock symbol is required';
                 return;
             }
             messageContainer.innerHTML = '';
             setApiKey(apiKey);
-            displayTable(stockGrid, value);
+            displayTable(stockGrid, symbolValue, timeInterval.value);
         }    
     });
 
