@@ -12,6 +12,8 @@
 /* harmony import */ var gridjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5587);
 /* harmony import */ var _emotion_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(1738);
 /* harmony import */ var finnhub__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(4545);
+/* harmony import */ var date_fns_startOfYear__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(8148);
+
 
 
 
@@ -56,14 +58,14 @@ const getUnixTime = date => {
   return Math.floor(date.getTime() / 1000);
 };
 
-const MAX_NUMS = 40;
+const DEFAULT_MAX_NUMS = 30;
 const initalData = [['-', '-', '-', '-', '-', '-', '-', '-']];
 
-async function displayTable(stockGrid, symbolInput) {
+async function displayTable(stockGrid, symbolInput, timeInterval) {
   const today = new Date();
-  const subtractMaxDays = (0,date_fns_fp_subDays__WEBPACK_IMPORTED_MODULE_5__/* .default */ .Z)(MAX_NUMS);
+  const subtractMaxDays = timeInterval !== 'YTD' ? (0,date_fns_fp_subDays__WEBPACK_IMPORTED_MODULE_5__/* .default */ .Z)(timeInterval) : 0;
   const formatDate = (0,date_fns_fp_format__WEBPACK_IMPORTED_MODULE_6__/* .default */ .Z)('dd MMM');
-  const startDate = subtractMaxDays(today);
+  const startDate = timeInterval === 'YTD' ? (0,date_fns_startOfYear__WEBPACK_IMPORTED_MODULE_7__/* .default */ .Z)(new Date()) : subtractMaxDays(today);
   const endDate = today;
   const loadingDiv = getById('stocks-loading-container');
   loadingDiv.innerHTML = 'Loading...';
@@ -129,6 +131,7 @@ const styles = {
 window.addEventListener('load', () => {
   const fetchBtn = getById('stocks-fetch-btn');
   const symbolInput = getById('stocks-symbol');
+  const timeInterval = getById('stocks-time-interval');
   const dataContainer = getById('stocks-table-container');
   const apiKeyInput = getById('stocks-api-key');
   const messageContainer = getById('stocks-message-container');
@@ -146,12 +149,13 @@ window.addEventListener('load', () => {
   stockGrid.render(dataContainer);
 
   if (getApiKeyValue()) {
-    displayTable(stockGrid, symbolInput.value);
+    setApiKey(getApiKeyValue());
+    displayTable(stockGrid, symbolInput.value, timeInterval.value);
   }
 
   fetchBtn.addEventListener('click', () => {
     const {
-      value
+      value: symbolValue
     } = symbolInput;
     const apiKey = getApiKeyValue();
 
@@ -160,18 +164,18 @@ window.addEventListener('load', () => {
       return;
     }
 
-    if (!value) {
+    if (!symbolValue) {
       messageContainer.innerHTML = 'Stock symbol is required';
       return;
     }
 
     messageContainer.innerHTML = '';
     setApiKey(apiKey);
-    displayTable(stockGrid, value);
+    displayTable(stockGrid, symbolValue, timeInterval.value);
   });
   symbolInput.addEventListener('keydown', e => {
     const {
-      value
+      value: symbolValue
     } = symbolInput;
     const apiKey = getApiKeyValue();
 
@@ -181,14 +185,14 @@ window.addEventListener('load', () => {
         return;
       }
 
-      if (!value) {
+      if (!symbolValue) {
         messageContainer.innerHTML = 'Stock symbol is required';
         return;
       }
 
       messageContainer.innerHTML = '';
       setApiKey(apiKey);
-      displayTable(stockGrid, value);
+      displayTable(stockGrid, symbolValue, timeInterval.value);
     }
   });
 });

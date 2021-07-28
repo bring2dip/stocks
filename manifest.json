@@ -1,11 +1,11 @@
 {
-  "app.js": "/stocks/app.7a2495f2a9fedf077899.js",
+  "app.js": "/stocks/app.1fce91ea9657c6a61f4a.js",
   "analytics.js": "/stocks/analytics.0706f5204ccafd8be6ed.js",
   "runtime.js": "/stocks/runtime.54eddae5a3864e3a9fc8.js",
   "lodash.js": "/stocks/lodash.1e22bfce4ca8cba10cd3.js",
   "mathjs.js": "/stocks/mathjs.7e713fa16f8999b16846.js",
   "finnhub.js": "/stocks/finnhub.768859887a1615f8c8f2.js",
-  "date-fns.js": "/stocks/date-fns.ceb11ac0d86f121db670.js",
+  "date-fns.js": "/stocks/date-fns.d7c4a3bf16f7654593f7.js",
   "emotion.js": "/stocks/emotion.4aa29623f9d9b54b41a2.js",
   "seedrandom.js": "/stocks/seedrandom.1a8097e1a273692a9b6c.js",
   "stylis.js": "/stocks/stylis.d98999bf1baa82266b92.js",
